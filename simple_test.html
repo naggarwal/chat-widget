@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Chat Widget Test</title>
+</head>
+<body>
+    <h1>Simple Test</h1>
+    <p>Check browser console for errors.</p>
+    
+    <script>
+        window.ChatWidgetConfig = {
+            welcomeMessage: "Hello! Welcome to The Grout Medic chat.",
+            subtitle: "I'm Sarah and I'm here to help you with your grout needs.",
+            actionButtons: [
+                { text: "Get Started", action: "get_started" },
+                { text: "I have a question", action: "question" },
+                { text: "Other", action: "other" }
+            ],
+            agentName: "Sarah",
+            agentAvatar: "https://api.dicebear.com/7.x/personas/svg?seed=sarah&backgroundColor=ec4899&clothingColor=262e33&eyeColor=262e33&hairColor=262e33&skinColor=fdbcb4",
+            companyName: "The Grout Medic",
+            companyTagline: "Chatting with Sarah",
+            primaryColor: "#0891b2",
+            showAgent: true,
+            webhookUrl: null,
+            termsOfUseUrl: "https://example.com/terms",
+            privacyPolicyUrl: "https://example.com/privacy",
+            poweredBy: "Explained Consulting",
+            poweredByUrl: "https://www.explained.consulting",
+            conversationTimeoutMinutes: 20
+        };
+    </script>
+    
+    <script src="chat_widget.js"></script>
+</body>
+</html>
