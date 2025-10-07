@@ -138,10 +138,44 @@ The widget is fully responsive and includes:
 
 ## 🔒 Security
 
-- Input sanitization to prevent XSS
-- Secure session management
-- Configurable CORS settings
-- No sensitive data stored in localStorage
+### Built-in Security Features
+
+- **XSS Protection**: All user inputs and configuration values are sanitized
+- **Cryptographically Secure Sessions**: Session IDs use `crypto.getRandomValues()` for strong randomness
+- **URL Validation**: Only http/https protocols allowed, prevents javascript: URI attacks
+- **HTML Sanitization**: Custom sanitizer for markdown rendering prevents script injection
+- **Configurable Storage**: Option to use sessionStorage instead of localStorage for sensitive data
+
+### Security Configuration Options
+
+```javascript
+window.ChatWidgetConfig = {
+  // Use sessionStorage for sensitive conversations (data deleted when browser closes)
+  useSessionStorage: true,  // Default: false
+
+  // Other security-related settings...
+  conversationTimeoutMinutes: 20,  // Auto-clear old conversations
+};
+```
+
+### Security Best Practices
+
+1. **Protect Your Webhook**: Implement rate limiting and authentication on your n8n webhook
+2. **Use HTTPS**: Always serve the widget over HTTPS in production
+3. **Validate Backend**: Never trust client-side data - validate all inputs in your n8n workflow
+4. **Sensitive Data**: Enable `useSessionStorage: true` when handling PII (addresses, phone numbers, payment info)
+5. **CORS Configuration**: Properly configure CORS headers in your n8n workflow
+6. **Content Security Policy**: Consider adding CSP headers to your website
+
+### Data Storage
+
+By default, chat messages are stored in localStorage to persist conversations across page reloads. However:
+
+- **localStorage** persists until explicitly cleared (use for general conversations)
+- **sessionStorage** clears when browser tab closes (use for sensitive data with `useSessionStorage: true`)
+- Users can manually clear conversation history using the 🔄 button in the chat header
+
+**Warning**: If users share sensitive information (PII, payment details), consider using sessionStorage to ensure data doesn't persist after the browser session ends.
 
 ## 📄 License
 

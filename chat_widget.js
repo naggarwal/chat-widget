@@ -33,52 +33,120 @@
     chatSessionKey: "sessionId",
     conversationTimeoutMinutes: 20, // Timeout in minutes (0 = no timeout)
     metadata: {}, // Additional metadata to send with each message
+    // Storage options
+    useSessionStorage: false, // If true, uses sessionStorage instead of localStorage (data deleted when browser closes)
     // Callbacks
     onMessageSend: null,
     onMessageReceive: null,
     onError: null
   };
 
-  // Generate session ID
-  function generateSessionId() {
-    return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  // Security helper functions
+  function validateUrl(url, fallback = '#') {
+    if (!url) return fallback;
+    try {
+      const parsed = new URL(url);
+      // Only allow http and https protocols
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+        return url;
+      }
+    } catch (e) {
+      // Invalid URL
+    }
+    return fallback;
   }
+
+  function sanitizeText(text) {
+    // Convert to string and escape HTML entities
+    const str = String(text || '');
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function sanitizeConfig() {
+    // Sanitize all text-based config values
+    config.welcomeMessage = sanitizeText(config.welcomeMessage);
+    config.subtitle = sanitizeText(config.subtitle);
+    config.agentName = sanitizeText(config.agentName);
+    config.companyName = sanitizeText(config.companyName);
+    config.companyTagline = sanitizeText(config.companyTagline);
+    config.recordingDisclaimer = sanitizeText(config.recordingDisclaimer);
+    config.poweredBy = sanitizeText(config.poweredBy);
+
+    // Validate URLs
+    config.agentAvatar = validateUrl(config.agentAvatar, '');
+    config.termsOfUseUrl = validateUrl(config.termsOfUseUrl, '#');
+    config.privacyPolicyUrl = validateUrl(config.privacyPolicyUrl, '#');
+    config.poweredByUrl = validateUrl(config.poweredByUrl, 'https://www.explained.consulting');
+    config.webhookUrl = config.webhookUrl ? validateUrl(config.webhookUrl, null) : null;
+
+    // Sanitize action buttons
+    if (Array.isArray(config.actionButtons)) {
+      config.actionButtons = config.actionButtons.map(button => ({
+        text: sanitizeText(button.text),
+        action: sanitizeText(button.action)
+      }));
+    }
+  }
+
+  // Sanitize config on load
+  sanitizeConfig();
+
+  // Generate session ID with cryptographically secure random
+  function generateSessionId() {
+    // Generate cryptographically secure random bytes
+    const array = new Uint8Array(16);
+    crypto.getRandomValues(array);
+
+    // Convert to hex string
+    const randomHex = Array.from(array)
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    return 'session_' + Date.now() + '_' + randomHex;
+  }
+
+  // Storage helper - uses sessionStorage or localStorage based on config
+  const storage = config.useSessionStorage ? sessionStorage : localStorage;
 
   // Get or create session ID
   function getSessionId() {
-    let sessionId = localStorage.getItem('n8n_chat_session_id');
+    let sessionId = storage.getItem('n8n_chat_session_id');
     if (!sessionId) {
       sessionId = generateSessionId();
-      localStorage.setItem('n8n_chat_session_id', sessionId);
+      storage.setItem('n8n_chat_session_id', sessionId);
     }
     return sessionId;
   }
 
   // Conversation persistence functions
+  // Note: Messages may contain sensitive information (PII, addresses, phone numbers)
+  // Consider using sessionStorage (useSessionStorage: true) for sensitive conversations
   function saveMessageToStorage(message, sender, timestamp = Date.now()) {
     const messages = getStoredMessages();
     messages.push({ message, sender, timestamp });
-    localStorage.setItem('n8n_chat_messages', JSON.stringify(messages));
+    storage.setItem('n8n_chat_messages', JSON.stringify(messages));
     updateLastActivity(); // Update activity timestamp
   }
 
   function getStoredMessages() {
-    const stored = localStorage.getItem('n8n_chat_messages');
+    const stored = storage.getItem('n8n_chat_messages');
     return stored ? JSON.parse(stored) : [];
   }
 
   function clearStoredMessages() {
-    localStorage.removeItem('n8n_chat_messages');
-    localStorage.removeItem('n8n_chat_last_activity');
+    storage.removeItem('n8n_chat_messages');
+    storage.removeItem('n8n_chat_last_activity');
   }
 
   // Conversation timeout functions
   function updateLastActivity() {
-    localStorage.setItem('n8n_chat_last_activity', Date.now().toString());
+    storage.setItem('n8n_chat_last_activity', Date.now().toString());
   }
 
   function getLastActivity() {
-    const lastActivity = localStorage.getItem('n8n_chat_last_activity');
+    const lastActivity = storage.getItem('n8n_chat_last_activity');
     return lastActivity ? parseInt(lastActivity) : null;
   }
 
@@ -103,7 +171,7 @@
       clearStoredMessages();
       // Generate new session ID for fresh start
       const newSessionId = generateSessionId();
-      localStorage.setItem('n8n_chat_session_id', newSessionId);
+      storage.setItem('n8n_chat_session_id', newSessionId);
       console.log('Chat widget: Conversation expired - new session ID generated');
       return true; // Conversation was cleared
     }
@@ -854,10 +922,10 @@
       if (confirm('Clear conversation history? This cannot be undone.')) {
         // Clear stored messages
         clearStoredMessages();
-        
+
         // Generate new session ID for fresh start
         const newSessionId = generateSessionId();
-        localStorage.setItem('n8n_chat_session_id', newSessionId);
+        storage.setItem('n8n_chat_session_id', newSessionId);
         
         // Reset conversation state
         conversationStarted = false;
@@ -1056,32 +1124,89 @@
     // Auto-resize on input
     input.addEventListener('input', autoResizeTextarea);
 
+    // Helper function to sanitize HTML (lightweight DOMPurify alternative)
+    function sanitizeHtml(html) {
+      const allowedTags = ['strong', 'em', 'br', 'div'];
+      const allowedAttributes = ['style'];
+      const allowedStyles = ['margin-left', 'margin-bottom'];
+
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+
+      // Recursively check and clean nodes
+      function cleanNode(node) {
+        // Remove script and style tags
+        if (node.tagName === 'SCRIPT' || node.tagName === 'STYLE') {
+          node.remove();
+          return;
+        }
+
+        // Check if tag is allowed
+        if (node.nodeType === 1) { // Element node
+          if (!allowedTags.includes(node.tagName.toLowerCase())) {
+            // Replace disallowed tag with its text content
+            const textNode = document.createTextNode(node.textContent);
+            node.replaceWith(textNode);
+            return;
+          }
+
+          // Remove disallowed attributes
+          const attrs = Array.from(node.attributes);
+          attrs.forEach(attr => {
+            if (!allowedAttributes.includes(attr.name)) {
+              node.removeAttribute(attr.name);
+            } else if (attr.name === 'style') {
+              // Sanitize style attribute
+              const styles = attr.value.split(';').filter(style => {
+                const [prop] = style.split(':').map(s => s.trim());
+                return allowedStyles.includes(prop);
+              });
+              node.setAttribute('style', styles.join('; '));
+            }
+          });
+
+          // Remove event handlers
+          const eventAttrs = Array.from(node.attributes).filter(attr =>
+            attr.name.startsWith('on')
+          );
+          eventAttrs.forEach(attr => node.removeAttribute(attr.name));
+        }
+
+        // Recursively clean child nodes
+        Array.from(node.childNodes).forEach(child => cleanNode(child));
+      }
+
+      Array.from(temp.childNodes).forEach(node => cleanNode(node));
+      return temp.innerHTML;
+    }
+
     // Helper function to parse Markdown and preserve newlines
     function parseMarkdown(text) {
       // First escape HTML to prevent XSS
       const div = document.createElement('div');
       div.textContent = text;
       let html = div.innerHTML;
-      
+
       // Parse basic Markdown
       // Bold text: **text** or __text__
       html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
-      
+
       // Italic text: *text* or _text_
       html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
       html = html.replace(/_(.*?)_/g, '<em>$1</em>');
-      
+
       // Line breaks
       html = html.replace(/\n/g, '<br>');
-      
+
       // Numbered lists: 1. item
       html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<div style="margin-left: 20px; margin-bottom: 4px;"><strong>$1.</strong> $2</div>');
-      
+
       // Bullet points: - item or * item
       html = html.replace(/^[\-\*]\s+(.+)$/gm, '<div style="margin-left: 20px; margin-bottom: 4px;">• $1</div>');
-      
-      return html;
+
+      // Final sanitization pass to catch any edge cases
+      return sanitizeHtml(html);
     }
   });
 
