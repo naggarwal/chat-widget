@@ -116,7 +116,7 @@
   
   <span class="code-comment">// === AGENT SETTINGS ===</span>
   agentName: "Sarah",
-  agentAvatar: "https://api.dicebear.com/7.x/personas/svg?seed=sarah&backgroundColor=ec4899&clothingColor=262e33&eyeColor=262e33&hairColor=262e33&skinColor=fdbcb4",
+  agentAvatar: "https://explained-public.s3.us-east-1.amazonaws.com/sarah_small.png",
   showAgent: true,
   
   <span class="code-comment">// === COMPANY BRANDING ===</span>
@@ -127,9 +127,8 @@
   recordingDisclaimer: "This transcript will be recorded by The Grout Medic and its affiliates. By using this chat, you agree to our Terms of Use and Privacy Policy.",
   termsOfUseUrl: "https://thegroutmedic.com/terms",
   privacyPolicyUrl: "https://thegroutmedic.com/privacy",
-  poweredBy: "Explained Consulting",
-  poweredByUrl: "https://www.explained.consulting",
   
+
   <span class="code-comment">// === SESSION MANAGEMENT ===</span>
   conversationTimeoutMinutes: 30,
   
@@ -139,7 +138,7 @@
   
   <span class="code-comment">// === METADATA ===</span>
   metadata: {
-    source: "demo-website",
+    source: "groutguy.com",
     page: window.location.pathname,
     timestamp: new Date().toISOString(),
     userAgent: navigator.userAgent
@@ -316,7 +315,7 @@
       
       // === AGENT SETTINGS ===
       agentName: "Sarah",
-      agentAvatar: "https://api.dicebear.com/7.x/personas/svg?seed=sarah&backgroundColor=ec4899&clothingColor=262e33&eyeColor=262e33&hairColor=262e33&skinColor=fdbcb4",
+      agentAvatar: "https://explained-public.s3.us-east-1.amazonaws.com/sarah_small.png",
       showAgent: true,
       
       // === COMPANY BRANDING ===
@@ -324,11 +323,8 @@
       companyTagline: "Chatting with Sarah",
       
       // === LEGAL & COMPLIANCE ===
-      recordingDisclaimer: "This transcript will be recorded by The Grout Medic and its affiliates. By using this chat, you agree to our Terms of Use and Privacy Policy.",
-      termsOfUseUrl: "https://thegroutmedic.com/terms",
-      privacyPolicyUrl: "https://thegroutmedic.com/privacy",
-      poweredBy: "Explained Consulting",
-      poweredByUrl: "https://www.explained.consulting",
+      recordingDisclaimer: "This transcript will be recorded by The Grout Medic and its affiliates.",
+      
       
       // === SESSION MANAGEMENT ===
       conversationTimeoutMinutes: 5,
@@ -339,7 +335,7 @@
       
       // === METADATA ===
       metadata: {
-        source: "demo-website",
+        source: "groutguy.com",
         page: window.location.pathname,
         timestamp: new Date().toISOString(),
         userAgent: navigator.userAgent
@@ -347,23 +343,23 @@
       
       // === CALLBACKS ===
       onMessageSend: function(message, action) {
-        console.log("📤 Sending to n8n:", { message, action });
+        console.log("Sending to n8n:", { message, action });
         // Track analytics, send to Google Analytics, etc.
       },
       
       onMessageReceive: function(response) {
-        console.log("📥 Received from n8n:", response);
+        console.log("Received from n8n:", response);
         // Track response metrics
       },
       
       onError: function(error) {
-        console.error("❌ Chat Error:", error);
+        console.error("Chat Error:", error);
         // Send error to monitoring service
       }
     };
   </script>
 
   <!-- Widget Script - Using jsDelivr CDN -->
-  <script src="https://cdn.jsdelivr.net/gh/naggarwal/chat-widget@main/chat_widget.min.js"></script>
+  <script src="./chat_widget.min.js"></script>
 </body>
 </html>
