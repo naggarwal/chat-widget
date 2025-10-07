@@ -15,14 +15,14 @@
       { text: "Other", action: "other" }
     ],
     agentName: "Sarah",
-    agentAvatar: "https://api.dicebear.com/7.x/personas/svg?seed=sarah&backgroundColor=ec4899&clothingColor=262e33&eyeColor=262e33&hairColor=262e33&skinColor=fdbcb4",
+    agentAvatar: "",
     primaryColor: "#0891b2",
     showAgent: true,
     // Company branding
     companyName: "The Grout Medic",
     companyTagline: "Chatting with Sarah",
     // Legal/Compliance
-    recordingDisclaimer: "This transcript will be recorded by The Grout Medic and its affiliates. By using this chat, you agree to our Terms of Use and Privacy Policy.",
+    recordingDisclaimer: "This transcript will be recorded by The Grout Medic and its affiliates.",
     termsOfUseUrl: "#",
     privacyPolicyUrl: "#",
     poweredBy: "Explained Consulting",
@@ -152,7 +152,7 @@
       position: absolute;
       bottom: 80px;
       right: 0;
-      width: 380px;
+      width: 450px;
       height: 600px;
       background: white;
       border-radius: 16px;
@@ -211,14 +211,14 @@
     
     .header-agent-info h3 {
       margin: 0;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 600;
       line-height: 1.3;
     }
     
     .header-agent-info p {
       margin: 0;
-      font-size: 12px;
+      font-size: 11px;
       opacity: 0.9;
       line-height: 1.3;
       margin-top: 2px;
@@ -269,26 +269,26 @@
     
     #chat-welcome-screen h2 {
       margin: 0 0 8px 0;
-      font-size: 20px;
+      font-size: 18px;
       color: #333;
       font-weight: 600;
     }
     
     #chat-welcome-screen p {
       margin: 0 0 24px 0;
-      font-size: 15px;
+      font-size: 13px;
       color: #666;
     }
     
     .chat-action-button {
       width: 100%;
-      padding: 14px 20px;
-      margin-bottom: 12px;
+      padding: 12px 18px;
+      margin-bottom: 10px;
       border: 2px solid ${config.primaryColor};
       background: white;
       color: ${config.primaryColor};
       border-radius: 25px;
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
       transition: all 0.2s ease;
@@ -346,13 +346,14 @@
     
     .chat-message-content {
       max-width: 75%;
-      padding: 12px 16px;
+      padding: 10px 14px;
       border-radius: 18px;
       word-wrap: break-word;
       white-space: pre-wrap;
       position: relative;
       box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-      line-height: 1.4;
+      line-height: 1.3;
+      font-size: 13px;
     }
     
     .chat-message-content strong {
@@ -466,14 +467,14 @@
       flex: 1;
       border: 1px solid #ddd;
       border-radius: 20px;
-      padding: 10px 16px;
-      font-size: 14px;
+      padding: 8px 14px;
+      font-size: 13px;
       outline: none;
       resize: none;
       min-height: 20px;
       max-height: 120px;
       font-family: inherit;
-      line-height: 1.4;
+      line-height: 1.3;
     }
     
     #chat-widget-input:focus {
@@ -550,9 +551,9 @@
     .legal-disclaimer {
       background: #f8f9fa;
       border-bottom: 1px solid #e9ecef;
-      padding: 12px 16px;
-      font-size: 11px;
-      line-height: 1.4;
+      padding: 10px 14px;
+      font-size: 10px;
+      line-height: 1.3;
       color: #6c757d;
     }
 
@@ -569,9 +570,9 @@
     .chat-widget-footer {
       background: #f8f9fa;
       border-top: 1px solid #e9ecef;
-      padding: 8px 16px;
+      padding: 6px 14px;
       text-align: center;
-      font-size: 10px;
+      font-size: 9px;
       color: #6c757d;
     }
 
@@ -621,7 +622,7 @@
       
       .chat-message-content {
         max-width: 85%;
-        font-size: 15px;
+        font-size: 14px;
       }
       
       .message-avatar {
@@ -635,25 +636,25 @@
       }
       
       .header-agent-info h3 {
-        font-size: 14px;
+        font-size: 13px;
         line-height: 1.2;
       }
       
       .header-agent-info p {
-        font-size: 11px;
+        font-size: 10px;
         line-height: 1.2;
         margin-top: 1px;
       }
       
       
       .legal-disclaimer {
-        padding: 10px 12px;
-        font-size: 10px;
+        padding: 8px 10px;
+        font-size: 9px;
       }
       
       .chat-widget-footer {
-        padding: 6px 12px;
-        font-size: 9px;
+        padding: 5px 10px;
+        font-size: 8px;
       }
       
       #chat-widget-input-container {
@@ -673,20 +674,20 @@
       }
       
       .chat-action-button {
-        padding: 16px 20px;
-        font-size: 16px;
+        padding: 14px 18px;
+        font-size: 14px;
       }
       
       #chat-welcome-screen {
-        padding: 20px 15px;
+        padding: 18px 12px;
       }
       
       #chat-welcome-screen h2 {
-        font-size: 18px;
+        font-size: 16px;
       }
       
       #chat-welcome-screen p {
-        font-size: 14px;
+        font-size: 12px;
       }
     }
 
@@ -751,7 +752,7 @@
           </button>
         </div>
         <div class="chat-widget-footer">
-          Powered by <a href="${config.poweredByUrl || '#'}" target="_blank" class="powered-by">${config.poweredBy}</a>
+          Powered by <a href="${config.poweredByUrl || 'https://www.explained.consulting'}" target="_blank" class="powered-by">${config.poweredBy || 'Expained Consulting'}</a>
         </div>
       </div>
       <button id="chat-widget-button">
