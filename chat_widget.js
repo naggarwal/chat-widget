@@ -676,16 +676,23 @@
       
       #chat-widget-window {
         width: 100%;
-        height: 80vh;
-        max-height: 600px;
-        bottom: 70px;
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height for mobile browsers */
+        max-height: none;
+        bottom: 0;
         right: 0;
         left: 0;
-        border-radius: 16px 16px 0 0;
+        top: 0;
+        border-radius: 0;
+        position: fixed;
+        z-index: 10000;
       }
       
       #chat-widget-messages {
         padding: 15px;
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
       }
       
       .chat-message-content {
@@ -701,6 +708,12 @@
       .header-agent-avatar {
         width: 36px;
         height: 36px;
+      }
+      
+      /* Full screen mobile header adjustments */
+      #chat-widget-header {
+        padding: 20px 16px;
+        min-height: 60px;
       }
       
       .header-agent-info h3 {
@@ -726,12 +739,16 @@
       }
       
       #chat-widget-input-container {
-        padding: 12px;
+        padding: 16px;
+        background: white;
+        border-top: 1px solid #eee;
       }
       
       #chat-widget-input {
         font-size: 16px; /* Prevents zoom on iOS */
-        border-radius: 16px;
+        border-radius: 20px;
+        padding: 12px 16px;
+        min-height: 44px; /* iOS recommended touch target */
       }
       
       #chat-agent-avatar {
@@ -759,13 +776,38 @@
       }
     }
 
-    @media (max-width: 320px) {
+    /* Tablet responsiveness */
+    @media (max-width: 768px) and (min-width: 481px) {
       #chat-widget-window {
-        height: 85vh;
+        width: 400px;
+        height: 600px;
+        bottom: 80px;
+        right: 20px;
+      }
+      
+      #chat-widget-messages {
+        padding: 18px;
       }
       
       .chat-message-content {
+        max-width: 80%;
+        font-size: 14px;
+      }
+    }
+
+    /* Small mobile devices */
+    @media (max-width: 320px) {
+      .chat-message-content {
         max-width: 90%;
+      }
+      
+      #chat-widget-header {
+        padding: 16px;
+        min-height: 56px;
+      }
+      
+      #chat-widget-input-container {
+        padding: 12px;
       }
     }
   `;
