@@ -824,7 +824,12 @@
   // Generate action buttons HTML
   const actionButtonsHTML = config.actionButtons.map((button, index) => {
     const isPrimary = index === 0 ? 'primary' : '';
-    return `<button class="chat-action-button ${isPrimary}" data-action="${button.action}">${button.text}</button>`;
+    // Use textContent to preserve emojis properly
+    const buttonElement = document.createElement('button');
+    buttonElement.className = `chat-action-button ${isPrimary}`;
+    buttonElement.setAttribute('data-action', button.action);
+    buttonElement.textContent = button.text;
+    return buttonElement.outerHTML;
   }).join('');
 
   // Create widget HTML
